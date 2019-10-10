@@ -3,41 +3,84 @@ var fs = require("fs");
 var keys = require("./keys.js");
 var axios = require("axios");
 var moment = require("moment");
+var inquirer = require('inquirer');
 var Spotify = require("node-spotify-api");
 var spotify = new Spotify(keys.spotify);
-var userCommand = process.argv[2].trim();
-var userInput = process.argv[3];
-liriCommands();
+initialInqury();
 
-function liriCommands(){
-    switch (userCommand) {
-        case "concert-this":
-            userInput.trim();
-            concertThis();
-            break;
-
-        case "spotify-this-song":
-            if( userInput === undefined){
-                userInput = "The Sign";
+function initialInqury(){
+    inquirer
+        .prompt([
+            {
+                type: "list",
+                choices: ["Concert This","Spotify This Song", "Movie This", "Do What It Says"],
+                name: "command",
+                message: "Please choose a command."
             }
-            userInput.trim();
-            console.log(userInput);
-            spotifyThisSong()
-            break;
-        
-        case "movie-this":
-            if( userInput === undefined){
-                userInput = "Mr. Nobody";
+        ]).then(function(data){
+            switch(data.command) {
+                case "Concert This":
+                    inquirer
+                        .prompt([
+                            {
+                            type: "input",
+                            name: "userInput",
+                            message: "Please type in a band or an artist."
+                            }
+                        ]).then(function(data){
+                            console.log(data.userInput)
+                            concertThis(data.userInput);
+                        });
+                    break;
+                case "Spotify This Song":
+                    inquirer
+                        .prompt([
+                            {
+                            type: "input",
+                            name: "userInput",
+                            message: "Please type in a song."
+                            }
+                        ]).then(function(data){
+                            console.log(data.userInput)
+                            spotifyThisSong(data.userInput);
+                        });
+                    break;
+                case "Movie This":
+                    inquirer
+                        .prompt([
+                            {
+                            type: "input",
+                            name: "userInput",
+                            message: "Please type in a movie."
+                            }
+                        ]).then(function(data){
+                            console.log(data.userInput)
+                            movieThis(data.userInput);
+                        });
+                    break;
+                case "Do What It Says":
+                    doWhatItSays();
+                    break;
             }
-            userInput.trim();
-            movieThis();
-            break;
-
-        case "do-what-it-says":
-            doWhatItSays()
-            break;
-    }
+        });
 }
+
+function repeatFunction(){
+    inquirer
+        .prompt([
+            {
+                type: "confirm",
+                name: "repeat",
+                message: "Would you like to perform another command?",
+                default: true
+            }
+        ]).then(function(response){
+            if(response.repeat){
+                initialInqury();
+            }
+        });
+}
+
 function doWhatItSays(){
     fs.readFile("random.txt","utf8", function(err, data){
         if (err){
@@ -46,10 +89,10 @@ function doWhatItSays(){
         var dataArray = data.split(",");
         userInput = dataArray[1].replace(/"/g,"");
         userCommand = dataArray[0];
-        liriCommands();
+        repeatFunction()
     })
 }
-function movieThis(){
+function movieThis(userInput){
     var movie = userInput;
     var queryUrl = "http://www.omdbapi.com/?t="+movie+"&apikey=trilogy";
     axios.get(queryUrl)
@@ -86,13 +129,15 @@ function movieThis(){
         console.log("Plot: "+response.data.Plot);
         console.log("Actors: "+response.data.Actors);
         console.log("----------------------------------------");
+        repeatFunction()
     })
     .catch( function (error){
         console.log(error);
     })
 }
-function spotifyThisSong(){
-    spotify.search({type: "track", query: userInput, limit: 10}, function(err,data){
+function spotifyThisSong(userInput){
+    var searchSong = userInput;
+    spotify.search({type: "track", query: searchSong, limit: 10}, function(err,data){
         if(err){
             console.log("----------Error Occurred----------");
             console.log(err);
@@ -142,8 +187,9 @@ function spotifyThisSong(){
             }
         });
     })
+    repeatFunction();
 }
-function concertThis(){
+function concertThis(userInput){
     var artist = userInput;
     var queryUrl = "https://rest.bandsintown.com/artists/" + artist + "/events?app_id=codingbootcamp";
     axios.get(queryUrl)
@@ -181,6 +227,7 @@ function concertThis(){
                 });
             }
             console.log("----------------------------------------")
+            repeatFunction()
         }else{
             console.log("----------------------------------------");
             console.log("Command: concert-this");
@@ -198,6 +245,7 @@ function concertThis(){
                 return console.log(err);
             }
         });
+        repeatFunction();
         }
     })
     .catch( function (error){
