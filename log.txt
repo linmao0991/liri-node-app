@@ -1,73 +1,10 @@
 
 ----------------------------------------
-Command: concert-this
-Artist: The Killers
+Command: do-what-it-says
+Command: concerrt-this
+Input: The Killers
 ----------------------------------------
-------------------------------
-Venue: 97x Next Big Thing
-Location: Tampa, FL, United States
-Event Time: November 22nd 2019, 7:00 pm
-------------------------------
-Venue: Riptide Festival
-Location: Fort Lauderdale, FL, United States
-Event Time: November 23rd 2019, 2:00 pm
-------------------------------
-Venue: F1 Abu Dhabi
-Location: Abu Dhabi, , United Arab Emirates
-Event Time: December 1st 2019, 12:00 am
-----------------------------------------
-----------Command: movie-this----------
-----------------------------------------
-Title: The Avengers
-Release Date: 04 May 2012
-IMDB Rating: 8.0/10
-Rotten Tomatoes: 92%
-Country: USA
-Language: English, Russian, Hindi
-Plot: Earth's mightiest heroes must come together and learn to fight as a team if they are going to stop the mischievous Loki and his alien army from enslaving humanity.
-Actors: Robert Downey Jr., Chris Evans, Mark Ruffalo, Chris Hemsworth
-----------------------------------------
-
-----------------------------------------
-Command: spotify-this-song
-Song: Mr Brightside
-----------------------------------------
-----------Result (1)----------
-Artist: Scott Bradlee's Postmodern Jukebox
-Track Name: Mr Brightside
-Spotify Link: https://open.spotify.com/track/7oK9VyNzrYvRFo7nQEYkWN
-Album Name: 33 Resolutions Per Minute
-----------------------------------------
-----------------------------------------
-Command: spotify-this-song
-Song: Mr. Brightside
-----------------------------------------
-----------Result (1)----------
-Artist: The Killers
-Track Name: Mr. Brightside
-Spotify Link: https://open.spotify.com/track/7oK9VyNzrYvRFo7nQEYkWN
-Album Name: Hot Fuss
-----------Result (2)----------
-Artist: Run River North
-Track Name: Mr. Brightside
-Spotify Link: https://open.spotify.com/track/7oK9VyNzrYvRFo7nQEYkWN
-Album Name: Superstition EP
-----------Result (3)----------
-Artist: WVNDER
-Track Name: Mr. Brightside
-Spotify Link: https://open.spotify.com/track/7oK9VyNzrYvRFo7nQEYkWN
-Album Name: Got You Covered, Vol. 2
-----------Result (4)----------
-Artist: The Killers
-Track Name: Mr. Brightside
-Spotify Link: https://open.spotify.com/track/7oK9VyNzrYvRFo7nQEYkWN
-Album Name: Direct Hits
-----------Result (5)----------
-Artist: Future Sunsets
-Track Name: Mr. Brightside
-Spotify Link: https://open.spotify.com/track/7oK9VyNzrYvRFo7nQEYkWN
-Album Name: Mr. Brightside
-----------------------------------------
+command 'concerrt-this' is not valid. Please check file and try again.
 ----------------------------------------
 Command: concert-this
 Artist: The Killers
@@ -84,15 +21,3 @@ Event Time: November 23rd 2019, 2:00 pm
 Venue: F1 Abu Dhabi
 Location: Abu Dhabi, , United Arab Emirates
 Event Time: December 1st 2019, 12:00 am
-----------------------------------------
-----------Command: movie-this----------
-----------------------------------------
-Title: The Avengers
-Release Date: 04 May 2012
-IMDB Rating: 8.0/10
-Rotten Tomatoes: 92%
-Country: USA
-Language: English, Russian, Hindi
-Plot: Earth's mightiest heroes must come together and learn to fight as a team if they are going to stop the mischievous Loki and his alien army from enslaving humanity.
-Actors: Robert Downey Jr., Chris Evans, Mark Ruffalo, Chris Hemsworth
-----------------------------------------

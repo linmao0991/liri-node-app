@@ -77,11 +77,14 @@ function repeatFunction(){
         ]).then(function(response){
             if(response.repeat){
                 initialInqury();
+            }else{
+                console.log("Good Bye.");
             }
         });
 }
 
 function doWhatItSays(){
+    var validCommands = ["concert-this","spotify-this-song","movie-this","do-what-it-says"];
     fs.readFile("random.txt","utf8", function(err, data){
         if (err){
             console.log(err);
@@ -89,21 +92,67 @@ function doWhatItSays(){
         var dataArray = data.split(",");
         userInput = dataArray[1].replace(/"/g,"");
         userCommand = dataArray[0];
-        repeatFunction()
+        console.log(userInput);
+        console.log(userCommand);
+        if(validCommands.indexOf(userCommand) !== -1){
+            switch (userCommand){
+                case "concert-this":
+                    concertThis(userInput);
+                    break;
+                case "spotify-this-song":
+                    spotifyThisSong(userInput);
+                    break;
+                case "movie-this":
+                    movieThis(userInput);
+                    break;
+            }
+        }else{
+            console.log("----------------------------------------");
+            console.log("Command: do-what-it-says");
+            console.log("Command: "+userCommand);
+            console.log("Input: "+userInput);
+            console.log("----------------------------------------");
+            console.log("command '"+userCommand+"' is not valid. Please check file and try again.");
+            fs.writeFileSync("log.txt",
+            "\r\n----------------------------------------"+
+            "\r\nCommand: do-what-it-says"+
+            "\r\nCommand: "+userCommand+
+            "\r\nInput: "+userInput+
+            "\r\n----------------------------------------"+
+            "\r\ncommand '"+userCommand+"' is not valid. Please check file and try again.",
+            function (err){
+                if(err){
+                    console.log(err);
+                }
+            });
+        }
     })
 }
 function movieThis(userInput){
-    var movie = userInput;
+    if(userInput.length > 0){
+        var movie = userInput;
+    }else{
+        var movie = "Mr. Nobody";
+        console.log("Nothing entered, default search: Mr. Nobody.");
+        fs.writeFileSync("log.txt",
+        "\r\nNothing entered, default search: Mr. Nobody.",
+        function(err){
+            if (err){
+                console.log(err);
+            }
+        });
+    }
     var queryUrl = "http://www.omdbapi.com/?t="+movie+"&apikey=trilogy";
     axios.get(queryUrl)
     .then( function(response){
         console.log("----------------------------------------");
         console.log("Command: movie-this");
-        console.log("Movie: "+userInput);
+        console.log("Movie: "+movie);
         console.log("----------------------------------------");
         fs.appendFileSync("log.txt",
             "\r\n----------------------------------------"+
-            "\r\n----------Command: movie-this----------"+
+            "\r\nCommand: movie-this"+
+            "\r\nMovie: "+movie+
             "\r\n----------------------------------------"+
             "\r\nTitle: "+response.data.Title+
             "\r\nRelease Date: "+response.data.Released+
@@ -136,58 +185,85 @@ function movieThis(userInput){
     })
 }
 function spotifyThisSong(userInput){
-    var searchSong = userInput;
+    if(userInput.length > 0 ){
+        var searchSong = userInput;
+    }else{
+        var searchSong = "The Sign";
+        console.log("Nothing entered, default search: The Sign");
+        fs.writeFileSync("log.txt",
+        "\r\nNothing entered, default search: The Sign",
+        function(err){
+            if (err){
+                console.log(err);
+            }
+        });
+    }
+    console.log("----------------------------------------");
+    console.log("Command: spotify-this-song");
+    console.log("Song: "+searchSong);
+    console.log("----------------------------------------");
+    fs.appendFileSync("log.txt",
+        "\r\n----------------------------------------"+
+        "\r\nCommand: spotify-this-song"+
+        "\r\nSong: "+searchSong+
+        "\r\n----------------------------------------"
+        ,function(err){
+            return console.log(err);
+    });
+
     spotify.search({type: "track", query: searchSong, limit: 10}, function(err,data){
+        var result = 0;
         if(err){
             console.log("----------Error Occurred----------");
             console.log(err);
             console.log("----------------------------------")
         }
-        var result = 0;
-        console.log("----------------------------------------");
-        console.log("Command: spotify-this-song");
-        console.log("Song: "+userInput);
-        console.log("----------------------------------------");
-        fs.appendFileSync("log.txt",
-            "\r\n----------------------------------------"+
-            "\r\nCommand: spotify-this-song"+
-            "\r\nSong: "+userInput+
+        if(data.tracks.items.length > 0){
+            for (var i = 0; i < data.tracks.items.length; i++){
+                var currentTrack = data.tracks.items[i].name;
+                if( searchSong.toLowerCase() === currentTrack.toLowerCase() && searchSong.length == currentTrack.length){
+                    result++;
+                    console.log("----------Result ("+result+")----------");
+                    console.log("Artist: "+data.tracks.items[i].artists[0].name);
+                    console.log("Track Name: "+data.tracks.items[i].name);
+                    console.log("Spotify Link: "+data.tracks.items[0].external_urls.spotify);
+                    console.log("Album Name: "+data.tracks.items[i].album.name);
+                    fs.appendFileSync("log.txt",
+                    "\r\n----------Result ("+result+")----------"+
+                    "\r\nArtist: "+data.tracks.items[i].artists[0].name+
+                    "\r\nTrack Name: "+data.tracks.items[i].name+
+                    "\r\nSpotify Link: "+data.tracks.items[0].external_urls.spotify+
+                    "\r\nAlbum Name: "+data.tracks.items[i].album.name
+                    ,function(err) {
+                        if (err) {
+                            return console.log(err);
+                        }
+                    });
+                }
+            }
+            console.log("----------------------------------------")
+            fs.appendFileSync("log.txt",
             "\r\n----------------------------------------"
             ,function(err){
-                return console.log(err);
+                if (err) {
+                    return console.log(err);
+                }
             });
-        for (var i = 0; i < data.tracks.items.length; i++){
-            var currentTrack = data.tracks.items[i].name;
-            if( userInput.toLowerCase() === currentTrack.toLowerCase() && userInput.length == currentTrack.length){
-                result++;
-                console.log("----------Result ("+result+")----------");
-                console.log("Artist: "+data.tracks.items[i].artists[0].name);
-                console.log("Track Name: "+data.tracks.items[i].name);
-                console.log("Spotify Link: "+data.tracks.items[0].external_urls.spotify);
-                console.log("Album Name: "+data.tracks.items[i].album.name);
-                fs.appendFileSync("log.txt",
-                "\r\n----------Result ("+result+")----------"+
-                "\r\nArtist: "+data.tracks.items[i].artists[0].name+
-                "\r\nTrack Name: "+data.tracks.items[i].name+
-                "\r\nSpotify Link: "+data.tracks.items[0].external_urls.spotify+
-                "\r\nAlbum Name: "+data.tracks.items[i].album.name
-                ,function(err) {
-                    if (err) {
-                        return console.log(err);
-                    }
-                });
-            }
+        }else{
+            console.log("No results for: "+searchSong+".")
+            console.log("Default search to: The Sign.")
+            fs.appendFileSync("log.txt",
+            "\r\nNo results for: "+searchSong+"."+
+            "\r\nDefault search to: The Sign.",
+            function(err){
+                if(err){
+                    return console.log(err);
+                }
+            });
+            spotifyThisSong("The Sign");
         }
-        console.log("----------------------------------------")
-        fs.appendFileSync("log.txt",
-        "\r\n----------------------------------------"
-        ,function(err){
-            if (err) {
-                return console.log(err);
-            }
-        });
-    })
-    repeatFunction();
+        repeatFunction();
+    });
 }
 function concertThis(userInput){
     var artist = userInput;
@@ -197,12 +273,12 @@ function concertThis(userInput){
         if( Array.isArray(data.data) && data.data.length > 0){
             console.log("----------------------------------------");
             console.log("Command: concert-this");
-            console.log("Artist: "+userInput);
+            console.log("Artist: "+artist);
             console.log("----------------------------------------");
             fs.appendFileSync("log.txt",
                 "\r\n----------------------------------------"+
                 "\r\nCommand: concert-this"+
-                "\r\nArtist: "+userInput+
+                "\r\nArtist: "+artist+
                 "\r\n----------------------------------------"
                 ,function(err){
                 if (err) {
@@ -231,13 +307,13 @@ function concertThis(userInput){
         }else{
             console.log("----------------------------------------");
             console.log("Command: concert-this");
-            console.log("Artist: "+userInput);
+            console.log("Artist: "+artist);
             console.log("----------------------------------------");
             console.log("No results found")
             fs.appendFileSync("log.txt",
             "\r\n----------------------------------------"+
             "\r\nCommand: concert-this"+
-            "\r\nArtist: "+userInput+
+            "\r\nArtist: "+artist+
             "\r\n----------------------------------------"+
             "\r\nNo results found"
             ,function(err){
